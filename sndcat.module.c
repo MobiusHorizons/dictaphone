@@ -8,7 +8,10 @@ package "main";
 
 #include <sndio.h>
 
+import cards from "cards.module.c";
+
 build append LDFLAGS "-lsndio";
+build append CFLAGS "-D_GNU_SOURCE";
 
 int bufsz = 0;
 int quit = 0;
@@ -55,7 +58,14 @@ int main(int argc, char ** argv){
   signal(SIGUSR1, intHandler);
   signal(SIGCHLD, intHandler);
 
-  struct sio_hdl * mic = sio_open(SIO_DEVANY, SIO_REC,  0);
+  int card = cards.get_default_input(NULL);
+  char device[16];
+  sprintf(device, "snd/%d", card);
+  struct sio_hdl * mic = sio_open(device, SIO_REC,  0);
+  if (mic == NULL) {
+    fprintf(stderr, "Unable to open device '%s'\n", device);
+    return 1;
+  }
   sio_onmove(mic, on_move, mic);
 
   struct sio_par params = {0};
