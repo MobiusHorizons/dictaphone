@@ -1,0 +1,6 @@
+cards.module.c
+choose-card.module.c
+dictaphone.module.c
+filename.module.c
+opus.module.c
+rec.module.c
